@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href='{% static "admin/css/dashboard.css" %}'>{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block breadcrumbs %}<div class="breadcrumbs">
+    <a href="/admin/">Home</a>
+    › Upload Csv
+</div>{% endblock %}
+
+{% block content %}
+<div id="content-main">
+{% if messages %}
+    {% for message in messages %}
+    <div>
+        <strong>{{message|safe}}</strong>
+    </div>
+    {% endfor %}
+{% else %}
+    {{order}}
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="csv_prezzi"> Upload a file</label>
+        <input type="file" id="csv_prezzi" name="csv_prezzi">
+        <small>Only accepts CSV files</small>
+        <button type="submit">Upload</button>
+    </form>
+    {% endif %}
+    <!--{% for prezzo in dati_prezzi %}
+        {{prezzo.nome_annuncio}}
+    {% endfor %}-->
+</div>
+{% endblock %}
