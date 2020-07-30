@@ -14,6 +14,7 @@ class DatiPrezzi(models.Model):
     regione = models.CharField(max_length=30, blank=False, default='')
     provincia = models.CharField(max_length=20, blank=False, default='')
     comune = models.CharField(max_length=20, blank=False, default='')
+    zip_code = models.CharField(max_length=20, blank=False, default='')
     indirizzo = models.CharField(max_length=100, blank=False, default='')
     nome_annuncio = models.CharField(max_length=500, blank=False, default='')
     metri_quadri = models.IntegerField(blank=False, default=-1)
