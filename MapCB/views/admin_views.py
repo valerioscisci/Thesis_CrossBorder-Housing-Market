@@ -1,5 +1,6 @@
 # Django Imports
 from django.contrib import messages
+from django.db.models import Max, Count
 from django.shortcuts import render
 
 # Other Imports
@@ -11,19 +12,58 @@ from geopy.geocoders import Nominatim
 # Models Imports
 from MapCB.models import DatiPrezzi
 
+# Funzione che elimina gli annunci duplicati che sono stati inseriti e mantiene pulito il database
+from MapCB.serializers import DuplicatiSerializer
+
+
+def rimuovi_duplicati():
+    # Mi preparo un json vuoto che mi tornerà i duplicati trovati e
+    response_data = {}
+
+    # Mi preparo un array che indica i campi che verranno valutati per trovare i duplicati
+    unique_fields = ['nome_annuncio', 'stato', 'regione', 'provincia', 'comune', 'indirizzo', 'metri_quadri', 'prezzo']
+
+    # Trova i duplicati
+    duplicates = (
+         DatiPrezzi.objects.values(*unique_fields)
+        .order_by()
+        .annotate(max_id=Max('_id'), count_id=Count('_id'))
+        .filter(count_id__gt=1)
+    )
+
+    # Per ogni duplicato prova a rimuoverlo, se qualcosa va storto ritorna un messaggio di errore
+    try:
+        for duplicate in duplicates:
+            (
+                DatiPrezzi.objects
+                .filter(**{x: duplicate[x] for x in unique_fields})
+                .exclude(_id=duplicate['max_id'])
+                .delete()
+            )
+        response_data["rimossi"] = "Vero"
+    except:
+        response_data["rimossi"] = "falso"
+
+    # Mi serializzo i duplicati che sono stati trovati cosi li mostro all'admin
+    duplicati_serializer = DuplicatiSerializer(duplicates, many=True)
+
+    # Preparo i duplicati per tornarli alla vista chiamante
+    response_data["duplicati"] = duplicati_serializer.data
+
+    return response_data
+
+
 # Vista che si occupa di caricare i dati nel DB dal file csv inserito dall'admin
 
 
 def upload_dati(request):
     # Dichiaro il template che contiene il form di upload
     template = "admin/admin_upload.html"
-    # dati_prezzi = DatiPrezzi.objects.all()
 
     # Variabile che mi contiene l'ordine delle colonne del .csv e i dati dei prezzi già caricati
     prompt = {
         'order': 'Le colonne del csv devono essere le seguenti: web-scraper-order,web-scraper-start-url, '
-                 'indirizzo, nome_annuncio, metri, price',
-        # 'dati_prezzi': dati_prezzi
+                 'indirizzo, nome_annuncio, metri, price'
     }
 
     # Se la richiesta è una GET i valori dei prezzi in base alla chiave specificata.
@@ -36,6 +76,9 @@ def upload_dati(request):
         messages.error(request, 'Errore file, caricare esclusivamente file csv!')
     data_set = csv_file.read().decode('UTF-8')
 
+    # Mi preparo una variabile per comunicare all'admin se tutto è stato caricato correttamente
+    error = False
+
     # Uso uno stream per leggere le righe del file una alla volta per poi caricare i dati nel DB
     io_string = io.StringIO(data_set)
     next(io_string)  # Salto l'header
@@ -44,7 +87,6 @@ def upload_dati(request):
         try:
             row.replace('\"\"', '\"')  # Rimpiazza le coppie di doppi apici con uno solo
             columns = row.split(',"')  # Splitta le righe in tante colonne
-            print(columns)
 
             # Elimina i numeri dopo la virgola e tutti i caratteri non numerici
             metri = re.sub(r"[^\d]", "", columns[4].split(',', 1)[0])
@@ -55,10 +97,12 @@ def upload_dati(request):
                 metri = -1
             
         except IndexError:
+            error = True
             continue
 
         # Se c'è stato un errore nell'inserimento dei  metri allora salto la riga
         if len(str(metri)) > 4 or metri == price:
+            error = True
             continue
 
         # Mi costruisco un geolocator per poi usarlo per avere informazioni sulla localizzazione della casa
@@ -156,7 +200,7 @@ def upload_dati(request):
                 fascia_prezzo = 'M'
             else:
                 fascia_prezzo = 'A'
-        #ITALIA VERBANIA
+
         # Creo un'occorrenza dei dati raccolti dalla riga all'interno del database
         _ = DatiPrezzi.objects.create(
             web_scraper_order=columns[0].replace('"', ''),
@@ -176,5 +220,14 @@ def upload_dati(request):
             longitudine=longitudine
         )
 
-    context = {}
+    # Prima di terminare la procedura, controlla se ci sono dei duplicati e gli elimina
+    response_rimozione = rimuovi_duplicati()
+    prompt["lista_duplicati"] = response_rimozione['duplicati']
+    prompt["conferma_rimossi"] = response_rimozione['rimossi']
+    prompt["error"] = error
+    context = prompt
+
     return render(request, template, context)
+
+#NEXT IS ITALIA TORINO
+# Verificare che effettivamente i duplicati tolti sono tali vedendo i dati di Cuneo 320/mese

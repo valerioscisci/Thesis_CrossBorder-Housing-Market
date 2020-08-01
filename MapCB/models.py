@@ -1,5 +1,5 @@
 # Django Imports
-from django.db import models
+from djongo import models
 from django.utils.translation import gettext as _
 from django.db.models import DecimalField
 # Other Imports
@@ -8,6 +8,7 @@ from django.db.models import DecimalField
 
 
 class DatiPrezzi(models.Model):
+    _id = models.ObjectIdField()
     web_scraper_order = models.CharField(max_length=20, blank=False, default='')
     web_scraper_start_url = models.CharField(max_length=300, blank=False, default='')
     stato = models.CharField(max_length=20, blank=False, default='')

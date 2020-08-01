@@ -1,7 +1,10 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href='{% static "admin/css/dashboard.css" %}'>{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href='https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css'>
+{% endblock %}
 
 {% block coltype %}colMS{% endblock %}
 
@@ -15,23 +18,61 @@
 {% block content %}
 <div id="content-main">
 {% if messages %}
+
     {% for message in messages %}
-    <div>
-        <strong>{{message|safe}}</strong>
-    </div>
+        {{message|safe}}
     {% endfor %}
+
 {% else %}
+    <div class="alert alert-secondary" role="alert">
     {{order}}
+    </div>
     <form action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="csv_prezzi"> Upload a file</label>
-        <input type="file" id="csv_prezzi" name="csv_prezzi">
-        <small>Only accepts CSV files</small>
-        <button type="submit">Upload</button>
+        <div class="form-group">
+            <label for="csv_prezzi"> Upload a file</label>
+            <input class="form-control" type="file" id="csv_prezzi" name="csv_prezzi">
+            <small class="form-text text-muted">Solo file csv accettati</small>
+        </div>
+        {% if error == True %}
+        <div class="alert alert-warning" role="alert">
+            Attenzione, in fase di caricamento alcuni dati sono stati scartati perchè errati!
+        </div>
+        {% elif error == False %}
+        <div class="alert alert-success" role="alert">
+            Caricamento effettuato con successo!
+        </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Carica</button>
     </form>
-    {% endif %}
-    <!--{% for prezzo in dati_prezzi %}
-        {{prezzo.nome_annuncio}}
-    {% endfor %}-->
+{% endif %}
+{% for prezzo in dati_prezzi %}
+    {{prezzo.nome_annuncio}}
+{% endfor %}
 </div>
+{% if lista_duplicati %}
+<div id="content-related" class="rounded-top pt-2">
+    {% if conferma_rimossi == "Vero" %}
+    <h4 class="mx-2">Lista Duplicati Eliminati</h4>
+    <ul class="list-group">
+        {% for duplicato in lista_duplicati %}
+        <li class="list-group-item list-group-item-danger">
+            <h4>Duplicato {{ forloop.counter }}</h4>
+                        <ul class="list-inline">
+            {% for campo, valore in duplicato.items %}
+                            <li class="list-inline-item"><span class="badge badge-info">{{ campo }}:</span> {{ valore }}</li>
+            {% endfor %}</ul>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-error">
+        Errore! Duplicati non rimossi
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 {% endblock %}
