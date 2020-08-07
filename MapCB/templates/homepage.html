@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ block.super }} - Homepage{% endblock title %}
+
+{% block css %}
+
+{% endblock css %}
+
+{% block content %}
+
+<main role="main">
+    <!-- Header -->
+    <header>
+        <div class="jumbotron" id="home-alpi">
+            <div class="text-center">
+                <h1 class="display-1 font-weight-bold text-uppercase">CrossBorder Web App</h1>
+                <button type="button" class="mt-5 btn btn-outline-light" id="home-link-mappa">Vai alla mappa <span class="oi oi-arrow-right"></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="display-4">Informazioni Generali</h2>
+                <hr class="hr-home">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-body bg-light p-3">
+                    <h3 class="card-title color-primary">L'idea <span class="oi oi-lightbulb"></span></h3>
+                    <p class="card-tex text-justify">
+                        Le applicazioni di annunci per <em>affitto e compravenditadi immobili</em> e gli Open Data
+                        presenti sul mercato hanno un grosso limite, ovvero si limitano ad una specifica nazione.
+                        Con la presente applicazione è possibile analizzare il <strong>mercato immobiliare</strong>
+                        su tutta l'area transfrontaliera italiana, mostrando dati provenienti da <mark>Francia, Austria,
+                        Svizzera, Slovenia e Italia</mark>.
+                    </p>
+                    <p class="card-text text-justify">
+                        Seguendo il link alla mappa, è possibile consultare le informazioni attualmente disponibili
+                        interagendo direttamente con essa. Se si vogliono avere ulteriori dettagli, è possibile
+                        registrarsi ed accedere alla propria area personale che permette la visualizzazione di
+                        alcune dashboard.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row v-space-2">
+        </div>
+        <div class="row mt-5">
+            <div class="card-deck">
+                <div class="card border-0 text-center">
+                    <span class="display-4 oi oi-wrench color-secondary"></span>
+                    <div class="card-body">
+                        <h2 class="card-title text-strong text-uppercase">Problema</h2>
+                        <hr class="hr-home-card">
+                        <p class="card-text text-monospace">
+                            I servizzi attuali di analisi del mercato immobiliare hanno limitazioni
+                            e a livello transfrontaliero sono del tutto inesistenti.
+                        </p>
+                    </div>
+                </div>
+                <div class="card border-0 text-center">
+                    <span class="display-4 oi oi-people color-primary"></span>
+                    <div class="card-body">
+                        <h2 class="card-title text-strong text-uppercase">Utenti</h2>
+                        <hr class="hr-home-card">
+                        <p class="card-text text-monospace">
+                            Due tipologie di possibili utenti possono essere interessate alle informazioni sul
+                            mercato immobiliare transfrontaliere: i <strong> Policy Makers</strong> e coloro che
+                            sono alla ricerca di un'abitazione da affittare o acquistare.
+                        </p>
+                    </div>
+                </div>
+                <div class="card border-0 text-center">
+                    <span class="display-4 oi oi-map-marker color-tertiary"></span>
+                    <div class="card-body">
+                        <h2 class="card-title text-strong text-uppercase">Soluzione</h2>
+                        <hr class="hr-home-card">
+                        <p class="card-text text-monospace">
+                            <em>CrossBorder Web App</em> permette di consultare le offerte attualmente presenti
+                            sull'area di confine.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row v-space-5">
+        </div>
+    </div>
+</main>
+
+{% endblock content %}
+
+{% block js %}
+
+{% endblock js %}

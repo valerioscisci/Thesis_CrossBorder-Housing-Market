@@ -230,4 +230,3 @@ def upload_dati(request):
     return render(request, template, context)
 
 #NEXT IS ITALIA TORINO
-# Verificare che effettivamente i duplicati tolti sono tali vedendo i dati di Cuneo 320/mese
