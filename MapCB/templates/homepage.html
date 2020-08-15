@@ -14,8 +14,10 @@
     <header>
         <div class="jumbotron" id="home-alpi">
             <div class="text-center">
-                <h1 class="display-1 font-weight-bold text-uppercase">CrossBorder Web App</h1>
-                <button type="button" class="mt-5 btn btn-outline-light" id="home-link-mappa">Vai alla mappa <span class="oi oi-arrow-right"></span></button>
+                <h1 class="display-1 font-weight-bold text-uppercase d-none d-lg-block v-space-1">CrossBorder Web App</h1>
+                <h1 class="display-3 font-weight-bold text-uppercase d-none d-md-block d-lg-none v-space-1">CrossBorder Web App</h1>
+                <h1 class="font-weight-bold text-uppercase d-sm-block d-md-none v-space-2">CrossBorder Web App</h1>
+                <a role="button" href="{% url 'mappa' %}" class="mt-5 btn btn-outline-light" id="home-link-mappa">Vai alla mappa <span class="oi oi-arrow-right"></span></a>
             </div>
         </div>
     </header>

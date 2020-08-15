@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ block.super }} - Mappa{% endblock title %}
+
+{% block css %}
+<!-- Libreria Leaflet -->
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+
+<!-- Libreria Leaflet Fullscreen Control -->
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+<!-- Bootstrap toggle button -->
+<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+{% endblock css %}
+
+{% block content %}
+
+<main role="main">
+    <!-- Header -->
+    <header>
+        <div id="mappa-header">
+            <div class="text-center">
+                <h1 class="display-1 font-weight-bold text-uppercase d-none d-xl-block v-space-1">Mappa Area di confine</h1>
+                <h1 class="display-2 font-weight-bold text-uppercase d-none d-lg-block d-xl-none v-space-1">Mappa Area di confine</h1>
+                <h1 class="display-3 font-weight-bold text-uppercase d-none d-md-block d-lg-none v-space-1">Mappa Area di confine</h1>
+                <h1 class="font-weight-bold text-uppercase d-sm-block d-md-none v-space-2">Mappa Area di confine</h1>
+            </div>
+            <svg class="mappa-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#fff" fill-opacity="1" d="M0,64L30,58.7C60,53,120,43,180,53.3C240,64,300,96,360,106.7C420,117,480,107,540,90.7C600,75,660,53,720,74.7C780,96,840,160,900,154.7C960,149,1020,75,1080,90.7C1140,107,1200,213,1260,229.3C1320,245,1380,171,1410,133.3L1440,96L1440,320L1410,320C1380,320,1320,320,1260,320C1200,320,1140,320,1080,320C1020,320,960,320,900,320C840,320,780,320,720,320C660,320,600,320,540,320C480,320,420,320,360,320C300,320,240,320,180,320C120,320,60,320,30,320L0,320Z"></path>
+            </svg>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <span class="display-4 oi oi-map-marker color-tertiary"></span>
+                <h3>Analisi del Mercato Immobiliare Transfrontaliero</h3>
+                <p class="lead">
+                    Usa la mappa in basso per selezionare l'area di interesse ed estrarre informazioni
+                    sulla stessa. <br/> Usa il form per scegliere se visualizzare prezzi di affitto
+                    o vendita e per indicare altri parametri di configurazione iniziale.
+                </p>
+                <hr class="hr-home">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12 bg-light rounded border border-secondary p-3">
+                <h4><strong>Configurazione della mappa</strong></h4>
+                <form id="form-mappa">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="livello">Livello</label>
+                            <select id="livello" class="form-control">
+                                <option selected value="provincia">Provincia</option>
+                            </select>
+                        </div>
+                        <div class="form-group offset-md-2 col-md-6">
+                            <label for="affitto_vendita">Affitto-Vendita</label><br>
+                            <input type="checkbox" id="affitto_vendita" checked data-toggle="toggle" data-on="Affitto" data-off="Vendita" data-onstyle="info" data-offstyle="warning">
+                            <small id="affitto_vendita_desc" class="form-text text-muted">Indicare se si è interessati ai dati delle vendite o degli affitti.</small>
+                        </div>
+                        <button type="submit" class="btn btn-outline-secondary col-2" id="form-submit">Aggiorna Mappa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row shadow p-3 mb-5 bg-white rounded" id="map">
+
+        </div>
+        <div class="row v-space-5">
+        </div>
+    </div>
+</main>
+
+{% endblock content %}
+
+{% block js %}
+<!-- Bootstrap toggle button -->
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+<!-- Libreria Leaflet -->
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+
+<!-- Libreria Leaflet Fullscreen Control -->
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+
+<!-- Libreria Leaflet Ajax -->
+<script src="{% static 'MapCB/js/leaflet-ajax.js' %}"></script>
+
+<script src="{% static 'MapCB/js/mappa.js' %}"></script>
+{% endblock js %}

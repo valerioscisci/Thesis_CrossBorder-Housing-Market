@@ -129,7 +129,7 @@
   color: black;
   font-weight: bold;
   transition: 0.25s linear;
-  transform: rotate(-20deg) scale(1.1);
+  transform: translateY(-10px) scale(1.1);
 }
 
 /* Display some links to the right */
@@ -170,8 +170,6 @@
     position: relative;
     width: 100px;
     height: auto;
-    top: -100px;
-    left: -15px;
     grid-column: 1;
     grid-row: 1;
   }
@@ -223,12 +221,20 @@ hr.hr-footer {
     color: #14D7FA;
 }
 
+.v-space-1 {
+    margin-top: 2em;
+}
+
 .v-space-2 {
     margin-top: 4em;
 }
 
 .v-space-5 {
     margin-top: 10em;
+}
+
+.v-space-10 {
+    margin-top: 20em;
 }
 
 /* #####  Homepage ##### */
@@ -246,7 +252,6 @@ hr.hr-footer {
 }
 
 #home-alpi h1 {
-    margin-top: 2em;
     text-shadow: -3px -3px 3px rgba(255,255,255,.1), 5px 5px 5px rgba(0,0,0,.5);
 }
 
@@ -263,4 +268,69 @@ hr.hr-home {
 hr.hr-home-card {
     border-top: 3px dashed black;
     width: 70%;
+}
+
+/* #####  Mappa ##### */
+
+#mappa-header {
+    position: relative;
+    background-image:
+    linear-gradient(to bottom right, rgba(255, 255, 255, 0.95), rgba(0, 0, 0, 0.4)),
+    url('../img/housing.jpg');
+    width: 100%;
+    height: 600px;
+    background-size: cover;
+    color: white;
+    padding-top: 20px;
+}
+
+#mappa-header h1 {
+    text-shadow: -3px -3px 3px rgba(255,255,255,.1), 5px 5px 5px rgba(0,0,0,.5);
+}
+
+#map {
+    weight: 100%;
+    height: 80vh;
+    z-index: 0 !important;
+}
+
+.mappa-svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    vertical-align: text-bottom;
+}
+
+@media only screen and (min-width: 1628px) {
+    .mappa-svg {
+        position: absolute;
+        bottom: -100px;
+        left: 0;
+        vertical-align: text-bottom;
+    }
+}
+
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
 }

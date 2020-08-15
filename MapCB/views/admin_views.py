@@ -87,7 +87,7 @@ def upload_dati(request):
         try:
             row.replace('\"\"', '\"')  # Rimpiazza le coppie di doppi apici con uno solo
             columns = row.split(',"')  # Splitta le righe in tante colonne
-
+            print(columns)
             # Elimina i numeri dopo la virgola e tutti i caratteri non numerici
             metri = re.sub(r"[^\d]", "", columns[4].split(',', 1)[0])
             price = re.sub(r"[^\d]", "", columns[5].split(',', 1)[0])
@@ -228,5 +228,3 @@ def upload_dati(request):
     context = prompt
 
     return render(request, template, context)
-
-#NEXT IS ITALIA TORINO

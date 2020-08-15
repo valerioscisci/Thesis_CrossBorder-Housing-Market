@@ -4,13 +4,15 @@ from django.contrib.auth import views as auth_views
 
 # Other Imports
 from MapCB.views.admin_views import upload_dati
-from MapCB.views.api import lista_prezzi
+from MapCB.views.api import lista_prezzi, lista_prezzi_medi
 from MapCB.views.static_views import HomepageView
+from MapCB.views.map_views import MappaView
 
 # Url generali sito
 
 urlpatterns = [
     path('', HomepageView.as_view(), name='home'),  #  Homepage
+    path('mappa/', MappaView.as_view(), name='mappa'),  #  Mappa
 ]
 
 
@@ -24,6 +26,7 @@ urlpatterns += [
 
 urlpatterns += [
     path(r'api/prezzi', lista_prezzi),
+    path(r'api/prezzi_medi', lista_prezzi_medi),
 ]
 
 # Login + Password Change

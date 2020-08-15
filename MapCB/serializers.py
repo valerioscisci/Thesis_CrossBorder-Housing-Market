@@ -7,8 +7,7 @@ from MapCB.models import DatiPrezzi
 class PrezziSerializer(serializers.ModelSerializer):
     class Meta:
         model = DatiPrezzi
-        fields = ('_id',
-                  'web_scraper_order',
+        fields = ('web_scraper_order',
                   'web_scraper_start_url',
                   'stato',
                   'regione',
@@ -36,3 +35,13 @@ class DuplicatiSerializer(serializers.ModelSerializer):
                   'indirizzo',
                   'metri_quadri',
                   'prezzo')
+
+class PrezziMediSerializer(serializers.ModelSerializer):
+    num_annunci = serializers.IntegerField()
+
+    class Meta:
+        model = DatiPrezzi
+        fields = ('provincia',
+                  'affitto_vendita',
+                  'fascia_prezzo',
+                  'num_annunci')

@@ -1,0 +1,361 @@
+// Creo la mia mappa posizionandola sul nord italia
+var map = L.map("map").setView([45.8, 9.9], 6);
+
+// Controll fullscreen
+map.addControl(new L.Control.Fullscreen());
+
+// Variabili che conterranno i layer della mappa con i confini e le aree cliccabili
+var geojsonLayer, borderLayer;
+
+// Variavile che conterrà i dati delle province che piloteranno poi il colore delle regioni e i dati visualizzati
+var dataProvince;
+
+// Inizialmente si parte a livello affitto ma poi l'utente potrà cambiare questa cosa
+var affitto_vendita = "A";
+
+// Inizialmente si parte a livello provincia ma poi l'utente potrà cambiare questa cosa
+var livelloSelezionato = "provincia";
+
+// GESTIONE FORM
+
+document
+  .getElementById("form-submit")
+  .addEventListener("click", function (event) {
+    event.preventDefault();
+
+    // Se il layer é già presente viene prima eliminato
+    if (geojsonLayer) {
+      geojsonLayer.remove();
+    }
+
+    if (
+      document.getElementById("affitto_vendita")
+        .checked
+    ) {
+      affitto_vendita = "A";
+    } else {
+      affitto_vendita = "V";
+    }
+
+    // Chiede e visualizza nuovamente i dati
+    jsonRequest(
+      "http://localhost:8000/api/prezzi_medi",
+      visualizeData,
+      livelloSelezionato
+    );
+
+    // Aggiorna il box in alto a destra
+    info.update();
+  });
+
+// Funzione asincrona che mi recupera i dati sottoforma di json dall'url passato e che lancia la funzione passata
+// come secondo parametro al termine dell'operazione di recupero
+function jsonRequest(url, callback, livello) {
+  var xhr = new XMLHttpRequest();
+  xhr.open(
+    "GET",
+    url + "?livello=" + livello,
+    true
+  );
+  xhr.responseType = "json";
+  xhr.onload = function () {
+    var status = xhr.status;
+    if (status === 200) {
+      callback(null, xhr.response);
+    } else {
+      callback(status, xhr.response);
+    }
+  };
+  xhr.send();
+}
+
+// Aggiunge alla mappa un layer che mi mostra un logo di copyright e un link a OpenMaps
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }
+).addTo(map);
+
+// Funzione che prende una dato e cerca tra i dati json che sono stati recuperati se ci sono delle informazioni
+// sui prezzi. Con queste info determina il colore in una scala da 0 a 100 dove 0 è verde(economico) e 100
+// è rosso(costoso)
+function getColor(d) {
+  // Prende solo i dati d'interesse in base a ciò che gli viene passato come parametro e al valore della variabile affitto_vendita
+  const datiProvinciaFiltrati = dataProvince.filter(
+    (datiProvincia) =>
+      datiProvincia.provincia.trim() ===
+        d.trim() &&
+      datiProvincia.affitto_vendita ===
+        affitto_vendita
+  );
+
+  // Per i valori filtrati mi calcolo il totale così poi posso riportare i valori in centesimi
+  var totale = datiProvinciaFiltrati.reduce(
+    function (prev, cur) {
+      return prev + cur.num_annunci;
+    },
+    0
+  );
+
+  // Variabile che mi serve per definire il peso da dare al numero di annunci in ciascuna categoria
+  var priceMapping = { B: 0, M: 100, A: 100 };
+
+  // Mi torna il valore di colore da attribuire a questa regione in base al numero di annunci in ciascuna fascia di prezzo
+  var totale100 = datiProvinciaFiltrati.reduce(
+    function (prev, cur) {
+      return (
+        prev +
+        (priceMapping[cur.fascia_prezzo] *
+          cur.num_annunci) /
+          totale
+      );
+    },
+    0
+  );
+
+  // Mi calcola il valore della tinta da assegnare ammesso che ho de idati per quella regione
+  if (totale != 0) {
+    var hue = (
+      (1 - totale100 / 100) *
+      100
+    ).toString(10);
+    return [
+      ["hsl(", hue, ",80%,60%)"].join(""),
+      datiProvinciaFiltrati,
+    ];
+  } else {
+    return ["#666666", datiProvinciaFiltrati];
+  }
+  // Ritorna il colore
+}
+
+// Funzione che per ciascuna zona ritorna lo stile da assegnargli. Lancia inotlre la funzione getColor per capire che
+// colore usare per il riempimento.
+function style(feature) {
+  const [color, datiFiltrati] = getColor(
+    feature.properties.Name
+  );
+  feature.properties.datiFiltrati = datiFiltrati;
+  return {
+    fillColor: color,
+    weight: 3,
+    opacity: 1,
+    color: "white",
+    dashArray: "3",
+    fillOpacity: 0.7,
+  };
+}
+
+// Funzione che mi evidenzia l'area su cui l'utente passa il mouse
+function highlightFeature(e) {
+  const regioneSelezionata = e.target;
+  info.update(
+    regioneSelezionata.feature.properties
+  );
+
+  var layer = e.target;
+
+  layer.setStyle({
+    weight: 5,
+    color: "#666",
+    dashArray: "",
+    fillOpacity: 0.7,
+  });
+
+  if (
+    !L.Browser.ie &&
+    !L.Browser.opera &&
+    !L.Browser.edge
+  ) {
+    layer.bringToFront();
+  }
+}
+
+// Quando l'utente sposta il mouse fuori dall'area resetta lo stile e i confini
+function resetHighlight(e) {
+  geojsonLayer.resetStyle(e.target);
+  info.update();
+  borderLayer.bringToFront();
+}
+
+// Zoomma quando l'utente clicca
+function zoomToFeature(e) {
+  map.fitBounds(e.target.getBounds());
+}
+
+function onEachFeature(feature, layer) {
+  layer.on({
+    mouseover: highlightFeature,
+    mouseout: resetHighlight,
+    click: zoomToFeature,
+  });
+}
+
+// Funzione che prende dei dati in formato json che gli sono stati passati, carica i dati dei confini dal file geojson
+// e poi sfruttando le funzioni sopra mi costruisco lo stile del layer e lo aggiunge alla mappa
+function visualizeData(status, dataResponse) {
+  if (status === null) {
+    dataProvince = dataResponse;
+    geojsonLayer = new L.GeoJSON.AJAX(
+      "/static/MapCB/geojson/province_confine.geojson",
+      {
+        style: style,
+        onEachFeature: onEachFeature,
+      }
+    );
+    geojsonLayer.addTo(map);
+
+    // Crea e aggiunge i dati dei confini
+    borderLayer = new L.GeoJSON.AJAX(
+      "/static/MapCB/geojson/confini.geojson",
+      {
+        style: {
+          weight: 4,
+          color: "red",
+          dashArray: "",
+          fillOpacity: 1,
+        },
+      }
+    );
+
+    borderLayer.addTo(map);
+    borderLayer.bringToFront();
+  } else {
+    console.log("error");
+  }
+}
+
+// Lancio la funzione che mi recupera i dati e me li visualizza
+jsonRequest(
+  "http://localhost:8000/api/prezzi_medi",
+  visualizeData,
+  livelloSelezionato
+);
+
+// Sezione che mi aggiunge le informazioni in alto a destra
+var info = L.control();
+
+info.onAdd = function (map) {
+  this._div = L.DomUtil.create(
+    "div",
+    "info container"
+  ); // create a div with a class "info"
+  this.update();
+  return this._div;
+};
+
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+  let htmlDatiPrezzi = "";
+  // Se ci sono dei dati da visualizzare vengono aggiunti
+  if (
+    props &&
+    typeof props.datiFiltrati !== "undefined" &&
+    props.datiFiltrati.length > 0
+  ) {
+    let totaliAnnunci = [0, 0, 0];
+    const mappingFasce = ["A", "M", "B"];
+
+    props.datiFiltrati.map((dato) => {
+      if (dato.fascia_prezzo === "A") {
+        totaliAnnunci[0] += dato.num_annunci;
+      }
+      if (dato.fascia_prezzo === "M") {
+        totaliAnnunci[1] += dato.num_annunci;
+      }
+      if (dato.fascia_prezzo === "B") {
+        totaliAnnunci[2] += dato.num_annunci;
+      }
+    });
+
+    totaliAnnunci.forEach((totale, id) => {
+      htmlDatiPrezzi +=
+        totale != 0
+          ? "<div class='row'><div class='col-6'>Fascia Prezzo: <span class='text-danger'>" +
+            mappingFasce[id] +
+            "</span></div><div class='col-6'>Num. Annunci: <span class='text-danger'>" +
+            totale +
+            "</span></div></div>"
+          : "";
+    });
+  } else {
+    // Altrimenti viene indicata l'assenza di dati
+    htmlDatiPrezzi =
+      "<div class='row'><div class='col-12 text-danger'>Attenzione!\
+     Nessun dato disponibile per questa zona.</div></div>";
+  }
+  this._div.innerHTML =
+    "<div class='row'><div class='col-12'><h4>Dati " +
+    livelloSelezionato +
+    " <span class='badge " +
+    (affitto_vendita === "A"
+      ? "badge-info'>" + "Affitto"
+      : "badge-warning'>" + "Vendita") +
+    "</span></h4></div></div>" +
+    (props
+      ? "<div class='row'><div class='col-12'><b>" +
+        props.Name +
+        "</b></div></div>" +
+        htmlDatiPrezzi
+      : "Passa il mouse su una zona");
+};
+
+info.addTo(map);
+
+// Sezione che mi aggiunge la legenda in basso a destra
+var legend = L.control({
+  position: "bottomright",
+});
+
+legend.onAdd = function (map) {
+  var div = L.DomUtil.create(
+      "div",
+      "info legend"
+    ),
+    grades = [0, 100],
+    colors = [
+      "#e10f47",
+      "#d71e47",
+      "#D62747",
+      "#CB3F47",
+      "#C05847",
+      "#B57047",
+      "#AA8947",
+      "#9FA147",
+      "#94BA47",
+      "#89D247",
+      "#7eeb47",
+    ];
+
+  // loop through our density intervals and generate a label with a colored square for each interval
+  for (var i = grades[1]; i >= 0; i -= 10) {
+    let legendLabel = "";
+    if (i === 0) {
+      legendLabel = "Costoso";
+    } else if (i === 50) {
+      legendLabel = "Medio";
+    } else if (i === 100) {
+      legendLabel = "Economico";
+    }
+    div.innerHTML +=
+      '<i style="background:' +
+      colors[i / 10] +
+      '"></i> ' +
+      (i === 0 || i === 50 || i === 100
+        ? legendLabel
+        : "") +
+      "<br>";
+  }
+
+  div.innerHTML +=
+    "<br>" +
+    '<i style="background:#666666"></i> ' +
+    "Dati Assenti" +
+    "<br>";
+
+  return div;
+};
+
+legend.addTo(map);
