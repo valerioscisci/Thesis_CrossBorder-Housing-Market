@@ -38,10 +38,13 @@ class DuplicatiSerializer(serializers.ModelSerializer):
 
 class PrezziMediSerializer(serializers.ModelSerializer):
     num_annunci = serializers.IntegerField()
+    prezzo_medio = serializers.FloatField()
 
     class Meta:
         model = DatiPrezzi
-        fields = ('provincia',
+        fields = ('stato',
+                  'provincia',
                   'affitto_vendita',
                   'fascia_prezzo',
-                  'num_annunci')
+                  'num_annunci',
+                  'prezzo_medio')

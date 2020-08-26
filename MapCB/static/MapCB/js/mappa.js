@@ -10,42 +10,75 @@ var geojsonLayer, borderLayer;
 // Variavile che conterrà i dati delle province che piloteranno poi il colore delle regioni e i dati visualizzati
 var dataProvince;
 
+// Varibaile che contiene i dati della zona selezionata dall'utente
+var dataSelected;
+
 // Inizialmente si parte a livello affitto ma poi l'utente potrà cambiare questa cosa
 var affitto_vendita = "A";
 
 // Inizialmente si parte a livello provincia ma poi l'utente potrà cambiare questa cosa
 var livelloSelezionato = "provincia";
 
+// Timeout che mi serve per lo zoom della mappa quando si clicca qualcosa
+var timeout = 500;
+
 // GESTIONE FORM
 
+// Funzione che mi resetta la mappa allo stato iniziale
+function formMapReload(event) {
+  event.preventDefault();
+
+  // Se il layer é già presente viene prima eliminato
+  if (geojsonLayer) {
+    geojsonLayer.remove();
+  }
+
+  if (
+    document.getElementById("affitto_vendita")
+      .checked
+  ) {
+    affitto_vendita = "A";
+  } else {
+    affitto_vendita = "V";
+  }
+
+  // Chiede e visualizza nuovamente i dati
+  jsonRequest(
+    "http://localhost:8000/api/prezzi_medi",
+    visualizeData,
+    livelloSelezionato
+  );
+
+  setTimeout(function () {
+    map.invalidateSize();
+    map.setView([45.8, 9.9], 6);
+  }, timeout);
+
+  // Aggiorna il box in alto a destra
+  info.update();
+}
+
+// Gestione dell'aggiornamento della mappa
 document
   .getElementById("form-submit")
   .addEventListener("click", function (event) {
-    event.preventDefault();
+    formMapReload(event);
+  });
 
-    // Se il layer é già presente viene prima eliminato
-    if (geojsonLayer) {
-      geojsonLayer.remove();
-    }
+// Gestione del reset della mappa
+document
+  .getElementById("map-reset")
+  .addEventListener("click", function (event) {
+    timeout = 500;
 
-    if (
-      document.getElementById("affitto_vendita")
-        .checked
-    ) {
-      affitto_vendita = "A";
-    } else {
-      affitto_vendita = "V";
-    }
+    formMapReload(event);
 
-    // Chiede e visualizza nuovamente i dati
-    jsonRequest(
-      "http://localhost:8000/api/prezzi_medi",
-      visualizeData,
-      livelloSelezionato
-    );
-
-    // Aggiorna il box in alto a destra
-    info.update();
+    document
+      .getElementById("map")
+      .classList.remove("col-lg-6");
+    document
+      .getElementById("dashboards")
+      .classList.remove("col-lg-6");
   });
 
 // Funzione asincrona che mi recupera i dati sottoforma di json dall'url passato e che lancia la funzione passata
@@ -105,12 +138,13 @@ function getColor(d) {
   // Mi torna il valore di colore da attribuire a questa regione in base al numero di annunci in ciascuna fascia di prezzo
   var totale100 = datiProvinciaFiltrati.reduce(
     function (prev, cur) {
-      return (
-        prev +
+      const Totale100 =
         (priceMapping[cur.fascia_prezzo] *
           cur.num_annunci) /
-          totale
-      );
+        totale;
+      cur.PrezzoPercentuale =
+        cur.num_annunci * cur.prezzo_medio;
+      return prev + Totale100;
     },
     0
   );
@@ -134,10 +168,21 @@ function getColor(d) {
 // Funzione che per ciascuna zona ritorna lo stile da assegnargli. Lancia inotlre la funzione getColor per capire che
 // colore usare per il riempimento.
 function style(feature) {
+  // Aggiunge il colore
   const [color, datiFiltrati] = getColor(
     feature.properties.Name
   );
+
+  // Aggiunge lo stato
+  datiFiltrati.length === 0
+    ? (feature.properties.Stato =
+        "Non disponibile")
+    : (feature.properties.Stato =
+        datiFiltrati[0].stato);
+
+  // Aggiunge i dati delle provincie
   feature.properties.datiFiltrati = datiFiltrati;
+
   return {
     fillColor: color,
     weight: 3,
@@ -182,7 +227,27 @@ function resetHighlight(e) {
 
 // Zoomma quando l'utente clicca
 function zoomToFeature(e) {
-  map.fitBounds(e.target.getBounds());
+  document
+    .getElementById("map")
+    .classList.add("col-lg-6");
+  var dashContainer = document.getElementById(
+    "dashboards"
+  );
+
+  dashContainer.classList.add("col-lg-6");
+
+  document.getElementById("dati-raw").innerHTML =
+    "<div></div>";
+
+  setTimeout(function () {
+    map.invalidateSize();
+    map.fitBounds(e.target.getBounds());
+  }, timeout);
+
+  timeout = 0;
+
+  // Lancia la funzione che mi effettua il calcolo delle dashboard per l'area selezionata
+  calcolaDashboard(e.target, dashContainer);
 }
 
 function onEachFeature(feature, layer) {
@@ -213,7 +278,7 @@ function visualizeData(status, dataResponse) {
       {
         style: {
           weight: 4,
-          color: "red",
+          color: "#1D90E2",
           dashArray: "",
           fillOpacity: 1,
         },
@@ -237,7 +302,7 @@ jsonRequest(
 // Sezione che mi aggiunge le informazioni in alto a destra
 var info = L.control();
 
-info.onAdd = function (map) {
+info.onAdd = function () {
   this._div = L.DomUtil.create(
     "div",
     "info container"
@@ -297,6 +362,8 @@ info.update = function (props) {
     (props
       ? "<div class='row'><div class='col-12'><b>" +
         props.Name +
+        "</b> - <b class='text-capitalize'>" +
+        props.Stato +
         "</b></div></div>" +
         htmlDatiPrezzi
       : "Passa il mouse su una zona");

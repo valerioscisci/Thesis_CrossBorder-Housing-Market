@@ -1,5 +1,5 @@
 # Django Imports
-from django.db.models import Count
+from django.db.models import Count, Avg
 from django.http.response import JsonResponse
 from rest_framework.decorators import api_view
 
@@ -25,8 +25,8 @@ def lista_prezzi_medi(request):
         livello = request.GET.get('livello', None)
         if livello is not None:
             prezzi = DatiPrezzi.objects.exclude(prezzo=-1)\
-            .values('provincia', 'affitto_vendita', 'fascia_prezzo') \
-            .annotate(num_annunci=Count('fascia_prezzo'))
+            .values('stato', 'provincia', 'affitto_vendita', 'fascia_prezzo') \
+            .annotate(num_annunci=Count('fascia_prezzo'), prezzo_medio=Avg('prezzo'))
 
             prezzi_serializer = PrezziMediSerializer(prezzi, many=True)
             prezzi = prezzi_serializer.data
@@ -160,3 +160,43 @@ def lista_prezzi_medi(request):
                     prezzo["provincia"] = "Savoie"
 
             return JsonResponse(prezzi_serializer.data, safe=False)
+
+# API che mi torna tutti la lista di prezzi presente nel DB
+@api_view(['GET'])
+def dettaglio_zona(request, zona):
+    if request.method == 'GET':
+        prezzi = DatiPrezzi.objects.exclude(prezzo=-1)
+
+        livello = request.GET.get('livello', None)
+
+        if livello is not None:
+                if livello == "provincia":
+                    if zona == "Ticino":
+                        zona = ["Moësa", "Circolo di Lugano est", "Circolo di Lugano ovest", "Lugano", "Arbedo-Castione", "Circolo dell'Isole", "Circolo di Locarno", "Mendrisio", "Circolo di Caneggio", "Circolo di Bellinzona", "Circolo d'Agno", "Gambarogno", "Monteceneri", "Circolo della Navegna", "Collina d'Oro", "Terre di Pedemonte", "Circolo di Vezia", "Circolo di Carona", "Circolo di Stabio", "Circolo della Magliasina", "Calanca", "Bellinzona", "Circolo di Balerna", "Circolo di Sessa", "Circolo della Riviera", "Soragno", "Circolo di Mendrisio", "Disentis/Mustér", "Sumvitg", "Faido"]
+                    elif zona == "Vallese":
+                        zona = ["Conthey", "Sierre", "Monthey", "Hérens", "Martigny", "Arosastrasse", "Visp", "Brig", "Bagnes", "Valais/Wallis", "Sion", "Route de la Télécabine", "Val-d'Illiez", "Nendaz", "Orsières", "Saint-Maurice", "Crans-Montana", "Anniviers", "Les Crosets", "Leuk", "Goms", "Mollens (VS)", "Westilich Ranon", "Leytron", "Grimisuat", "Kantonsstrasse", "Vex"]
+                    elif zona == "Grigioni":
+                        zona = ["Albula", "Graubünden/Grigioni/Grischun", "Flims", "San Bastiaun", "Davos", "Prättigau/Davos", "Maloja", "Spinadascio", "Surselva", "Via Gunels" , "Rofna", "Landquart", "Via dal Corvatsch", "Region Engiadina Bassa/Val Müstair", "Stradung", "Via del Corvatsh", "Viamala", "Vaz/Obervaz", "Plessur", "Cazis", "Imboden", "Bernina", "Surses", "Valsot", "Prättigauerstrasse", "Zernez", "Posta Veglia", "Tschiertschen-Praden"]
+                    elif zona == "Karnten":
+                        zona = ["Villach", "Klagenfurt-am-Worthersee"]
+                    elif zona == "Kitzbuhel":
+                        zona = ["Landeck"]
+                    elif zona == "Gorenjska":
+                        zona = ["Kranj", "Skofja-Loka", "Trzic", "Jesenice", "Radovljica"]
+                    elif zona == "Primorska":
+                        zona = ["Tolmin", "Ajdovscina", "Nova-Gorica", "Idrija"]
+                    elif zona == "Severna-Primorska":
+                        zona = ["Piran", "Sezana", "Koper", "Izola"]
+                    elif zona == "Haute-Savoie":
+                        zona = ["Route du Vieux Village"]
+                    else:
+                        zona = [zona]
+                    dati_zona = prezzi.filter(provincia__in=zona)
+                else:
+                    dati_zona = {}
+        else:
+            dati_zona = {}
+
+        prezzi_serializer = PrezziSerializer(dati_zona, many=True)
+        return JsonResponse(prezzi_serializer.data, safe=False)
+        # 'safe=False' for objects serialization

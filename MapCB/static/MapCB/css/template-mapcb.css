@@ -207,6 +207,7 @@ hr.hr-footer {
   transition: 0.25s linear;
   transform: translateX(20px) scale(1.2) skewX(-15deg);
 }
+
 /* ########## Generali ######### */
 
 .color-primary {
@@ -292,6 +293,7 @@ hr.hr-home-card {
     weight: 100%;
     height: 80vh;
     z-index: 0 !important;
+    transition: all .5s linear;
 }
 
 .mappa-svg {
@@ -333,4 +335,64 @@ hr.hr-home-card {
     float: left;
     margin-right: 8px;
     opacity: 0.7;
+}
+
+#dashboards {
+    transition: all .5s linear;
+}
+
+hr.hr-mappa {
+    border-top: 3px dotted #14D7FA;
+    width: 75%;
+}
+
+.box-prezzi {
+  position: relative;
+  display: inline-block;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.box-prezzi::after {
+  content: "";
+  border-radius: 5px;
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.box-prezzi:hover {
+  -webkit-transform: scale(1.25, 1.25);
+  transform: scale(1.25, 1.25);
+}
+
+.box-prezzi:hover::after {
+    opacity: 1;
+}
+
+#map-container {
+    -webkit-box-shadow: inset 0px -47px 22px -40px rgba(211,211,211,0.75);
+    -moz-box-shadow: inset 0px -47px 22px -40px rgba(211,211,211,0.75);
+    box-shadow: inset 0px -47px 22px -40px rgba(211,211,211,0.75);
+}
+
+#dati-raw {
+    min-height: 400px;
+    background: rgb(211,211,211);
+    background: linear-gradient(180deg, rgba(211,211,211,1) 0%, rgba(248,249,250,1) 45%, rgba(255,255,255,1) 100%);
+}
+
+#lista-dati-title {
+    background-image: linear-gradient(to right, #1D90E2 75%, transparent 60%);
+    background-position: 0 1.04em;
+    background-repeat: repeat-x;
+    background-size: 5px 2px;
 }
