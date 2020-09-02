@@ -52,12 +52,6 @@ function formMapReload(event) {
   setTimeout(function () {
     map.invalidateSize();
     map.setView([45.8, 9.9], 6);
-    document.getElementById(
-      "dati-raw"
-    ).innerHTML = " ";
-    document.getElementById(
-      "dashboards"
-    ).innerHTML = " ";
   }, timeout);
 
   // Aggiorna il box in alto a destra

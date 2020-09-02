@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 
 # Other Imports
 from MapCB.views.admin_views import upload_dati
-from MapCB.views.api import lista_prezzi, lista_prezzi_medi, dettaglio_zona
+from MapCB.views.api import lista_prezzi, lista_prezzi_medi, dettaglio_zona, vicini_zona
 from MapCB.views.static_views import HomepageView
 from MapCB.views.map_views import MappaView
 
@@ -28,6 +28,7 @@ urlpatterns += [
     path('api/prezzi', lista_prezzi),
     path('api/prezzi_medi', lista_prezzi_medi),
     path('api/prezzi/<slug:zona>', dettaglio_zona),
+    path('api/vicini/<slug:zona>', vicini_zona),
 ]
 
 # Login + Password Change

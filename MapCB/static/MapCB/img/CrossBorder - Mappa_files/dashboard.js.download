@@ -1,9 +1,5 @@
-// Dichiarazione variabili di appoggio dei dati delle dashboard
-var prezziMediVicini;
-var prezziMedi = [];
-
 // Funzioni necessarie al calcolo delle dashboard
-
+var prezziMediVicini;
 // Funzione che mi carica l'html per ogni prezzo che verrà visualizzato sottoforma di tabella
 function caricaHtmlDatiRaw() {
   return new Promise((resolve) => {
@@ -104,14 +100,6 @@ function caricaDatiRaw(status, dataResponse) {
     );
 
     observer.observe(datiRawContainer);
-
-    let dataSelectedFiltered = dataSelected.filter(
-      (datiProvincia) =>
-        datiProvincia.affitto_vendita ===
-        affitto_vendita
-    );
-    // Mi lancia la funzione che mi carica i dati per la dashboard dei trend
-    caricaDatiTrend(dataSelectedFiltered);
   } else {
     console.log("error");
     return {};
@@ -163,46 +151,6 @@ function caricaVicini(status, dataResponse) {
   } else {
     console.log("error");
     return {};
-  }
-}
-
-// Funzione che mi prepara i prezzi medi per il grafico dei trend
-function caricaDatiTrend(dataSelected) {
-  // Funzione che raggruppa in base alla key passata
-  const groupBy = (array, key) => {
-    return array.reduce(
-      (result, currentValue) => {
-        // Se un array è già presente per la chiave, inserisce l'elemento nell'array, altrimenti creare un array ed inserisce l'oggetto
-        (result[currentValue[key]] =
-          result[currentValue[key]] || []).push(
-          currentValue
-        );
-        return result;
-      },
-      {}
-    );
-  };
-
-  //Lancio la funzione che raggruppa in base alla data di caricamento
-  const dataGroupedByDate = groupBy(
-    dataSelected,
-    "data_inserimento"
-  );
-
-  // Funzione che per ogni gruppo di dati divisi per data di caricamento mi calcola il valore medio
-  for (const date in dataGroupedByDate) {
-    let prezziMediGiornoX = (
-      dataGroupedByDate[date].reduce(
-        (prev, cur) => {
-          return (prev += cur.prezzo);
-        },
-        0
-      ) / dataGroupedByDate[date].length
-    ).toFixed(2);
-    prezziMedi.push({
-      date: date,
-      prezzoMedio: prezziMediGiornoX,
-    });
   }
 }
 
@@ -298,15 +246,7 @@ function caricaHtmlDashboard(e) {
               "<div id='nearDash'></div></div>"
             : "<h3 class='alert alert-danger' role='alert'>Dashboard non disponibile</h3></div>") +
           "</div>" +
-          "<div class='tab-pane fade' id='trend' role='tabpanel' aria-labelledby='tab-trend'>" +
-          "<p class='lead text-justify'>In questa dashboard viene mostrato l'andamento temporale dei prezzi medi nella zona.<p>" +
-          "<hr class='hr-mappa'><div class='text-center'>" +
-          (e.feature.properties.PrezzoMedio !=
-          "NaN"
-            ? "<span class='oi oi-graph color-secondary h2'></span><br><h4><em>Andamento <u>prezzi medi nel tempo</u></em></h4>" +
-              "<div id='trendDash'></div></div>"
-            : "<h3 class='alert alert-danger' role='alert'>Dashboard non disponibile</h3></div>") +
-          "</div>" +
+          "<div class='tab-pane fade' id='trend' role='tabpanel' aria-labelledby='tab-trend'>ertre</div>" +
           "</div>" +
           "</div></div></div>"
       );
@@ -599,10 +539,7 @@ async function calcolaDashboard(
         );
       })
       .attr("width", function (d) {
-        let localWidth = x(d.x1) - x(d.x0) - 1;
-        return localWidth > 0
-          ? localWidth
-          : localWidth + 1;
+        return x(d.x1) - x(d.x0) - 1;
       })
       .attr("height", function (d) {
         return height2 - y(d.length);
@@ -643,10 +580,10 @@ async function calcolaDashboard(
         margin3.right,
       height3 =
         300 +
-        prezziMediVicini.length * 20 -
+        prezziMediVicini.length * 60 -
         margin3.top -
         margin3.bottom;
-
+    console.log(prezziMediVicini.length);
     // Inserisce l'elemento svg nella pagina
     var svg = d3
       .select("#nearDash")
@@ -738,112 +675,5 @@ async function calcolaDashboard(
       .attr("r", "7")
       .style("fill", "#14D7FA")
       .attr("stroke", "black");
-
-    // Setta i margini del grafico
-    var margin4 = {
-        top: 10,
-        right: 30,
-        bottom: 30,
-        left: 60,
-      },
-      width4 =
-        document.getElementById("medie")
-          .offsetWidth -
-        margin4.left -
-        margin4.right,
-      height4 =
-        400 - margin4.top - margin4.bottom;
-
-    // Aggiunge l'svg nell'html
-    var svg = d3
-      .select("#trend")
-      .append("svg")
-      .attr(
-        "width",
-        width4 + margin4.left + margin4.right
-      )
-      .attr(
-        "height",
-        height4 + margin4.top + margin4.bottom
-      )
-      .append("g")
-      .attr(
-        "transform",
-        "translate(" +
-          margin4.left +
-          "," +
-          margin4.top +
-          ")"
-      );
-    // When reading the csv, I must format variables:
-    prezziMedi = prezziMedi.map((d) => {
-      return {
-        date: d3.timeParse("%Y-%m-%d")(d.date),
-        value: d.prezzoMedio,
-      };
-    });
-    // Now I can use this dataset:
-    // Add X axis --> it is a date format
-    var x = d3
-      .scaleTime()
-      .domain(
-        d3.extent(prezziMedi, function (d) {
-          return d.date;
-        })
-      )
-      .range([0, width4]);
-    svg
-      .append("g")
-      .attr(
-        "transform",
-        "translate(0," + height4 + ")"
-      )
-      .call(d3.axisBottom(x));
-    // Add Y axis
-    var y = d3
-      .scaleLinear()
-      .domain([
-        d3.min(prezziMedi, function (d) {
-          return +d.value;
-        }) - 50,
-        d3.max(prezziMedi, function (d) {
-          return +d.value;
-        }) + 50,
-      ])
-      .range([height4, 0]);
-    svg.append("g").call(d3.axisLeft(y));
-    // Add the line
-    svg
-      .append("path")
-      .datum(prezziMedi)
-      .attr("fill", "none")
-      .attr("stroke", "#14D7FA")
-      .attr("stroke-width", 1.5)
-      .attr(
-        "d",
-        d3
-          .line()
-          .x(function (d) {
-            return x(d.date);
-          })
-          .y(function (d) {
-            return y(d.value);
-          })
-      );
-    // Add the points
-    svg
-      .append("g")
-      .selectAll("dot")
-      .data(prezziMedi)
-      .enter()
-      .append("circle")
-      .attr("cx", function (d) {
-        return x(d.date);
-      })
-      .attr("cy", function (d) {
-        return y(d.value);
-      })
-      .attr("r", 5)
-      .attr("fill", "#14D7FA");
   }
 }

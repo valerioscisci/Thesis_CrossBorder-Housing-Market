@@ -200,3 +200,66 @@ def dettaglio_zona(request, zona):
         prezzi_serializer = PrezziSerializer(dati_zona, many=True)
         return JsonResponse(prezzi_serializer.data, safe=False)
         # 'safe=False' for objects serialization
+
+# API che mi torna tutti la lista di zone vicine di ciascuna zona
+@api_view(['GET'])
+def vicini_zona(request, zona):
+    if request.method == 'GET':
+
+        livello = request.GET.get('livello', None)
+
+        if livello is not None:
+                if livello == "provincia":
+                    vicini = [
+                        ## Austria
+                        {"zona": "Alpes-Maritimes", "vicini": ["Imperia", "Cuneo", "Alpes-de-Haute-Provence"]},
+                        {"zona": "Alpes-de-Haute-Provence", "vicini": ["Hautes-Alpes", "Cuneo", "Alpes-Maritimes"]},
+                        {"zona": "Hautes-Alpes", "vicini": ["Alpes-de-Haute-Provence", "Cuneo", "Torino", "Savoie"]},
+                        {"zona": "Savoie", "vicini": ["Hautes-Alpes", "Aosta", "Torino", "Haute-Savoie"]},
+                        {"zona": "Haute-Savoie", "vicini": ["Vallese", "Aosta", "Savoie"]},
+
+                        ## Svizzera
+                        {"zona": "Vallese", "vicini": ["Haute-Savoie", "Aosta", "Vercelli", "Verbania", "Ticino"]},
+                        {"zona": "Ticino", "vicini": ["Vallese", "Sondrio", "Varese", "Verbania", "Grigioni", "Como"]},
+                        {"zona": "Grigioni", "vicini": ["Como", "Sondrio", "Bolzano", "Solden", "Ticino"]},
+
+                        ## Austria
+                        {"zona": "Solden", "vicini": ["Innsbruck", "Bolzano", "Grigioni"]},
+                        {"zona": "Innsbruck", "vicini": ["Solden", "Bolzano", "Kitzbuhel"]},
+                        {"zona": "Kitzbuhel", "vicini": ["Zell-am-See", "Bolzano", "Innsbruck"]},
+                        {"zona": "Zell-am-See", "vicini": ["Kitzbuhel", "Bolzano", "Lienz", "Spittal-An-Der-Drau"]},
+                        {"zona": "Lienz", "vicini": ["Zell-am-See", "Bolzano", "Belluno", "Spittal-An-Der-Drau"]},
+                        {"zona": "Spittal-An-Der-Drau", "vicini": ["Zell-am-See", "Udine", "Belluno", "Lienz", "Karnten"]},
+                        {"zona": "Karnten", "vicini": ["Zell-am-See", "Udine", "Gorenjska", "Spittal-An-Der-Drau"]},
+
+                        ## Slovenia
+                        {"zona": "Gorenjska", "vicini": ["Karnten", "Udine", "Primorska"]},
+                        {"zona": "Primorska", "vicini": ["Gorizia", "Udine", "Gorenjska", "Severna-Primorska"]},
+                        {"zona": "Severna-Primorska", "vicini": ["Gorizia", "Trieste", "Primorska"]},
+
+                        ## Italia
+                        {"zona": "Trieste", "vicini": ["Gorizia", "Severna-Primorska"]},
+                        {"zona": "Gorizia", "vicini": ["Severna-Primorska", "Trieste", "Primorska", "Udine"]},
+                        {"zona": "Udine", "vicini": ["Karnten", "Gorenjska", "Primorska", "Gorizia", "Spittal-An-Der-Drau", "Belluno"]},
+                        {"zona": "Belluno", "vicini": ["Spittal-An-Der-Drau", "Lienz", "Bolzano", "Udine"]},
+                        {"zona": "Bolzano", "vicini": ["Belluno", "Lienz", "Zell-am-See", "Kitzbuhel", "Innsbruck", "Solden", "Grigioni", "Sondrio"]},
+                        {"zona": "Sondrio", "vicini": ["Bolzano", "Grigioni", "Como"]},
+                        {"zona": "Como", "vicini": ["Sondrio", "Grigioni", "Ticino", "Varese"]},
+                        {"zona": "Varese", "vicini": ["Como", "Verbania", "Ticino"]},
+                        {"zona": "Verbania", "vicini": ["Varese", "Ticino", "Vallese", "Vercelli"]},
+                        {"zona": "Vercelli", "vicini": ["Verbania", "Vallese", "Aosta", "Torino"]},
+                        {"zona": "Aosta", "vicini": ["Vercelli", "Vallese", "Haute-Savoie", "Savoie", "Torino"]},
+                        {"zona": "Torino", "vicini": ["Aosta", "Vercelli", "Hautes-Alpes", "Savoie", "Cuneo"]},
+                        {"zona": "Cuneo", "vicini": ["Torino", "Alpes-de-Haute-Provence", "Hautes-Alpes", "Alpes-Maritimes", "Imperia"]},
+                        {"zona": "Imperia", "vicini": ["Cuneo", "Alpes-Maritimes"]},
+                    ]
+                    for vicini_container in vicini:
+                        if vicini_container["zona"] == zona:
+                            vicini_zona = {"vicini": vicini_container["vicini"]}
+                else:
+                    vicini_zona = {}
+        else:
+            vicini_zona = {}
+
+    return JsonResponse(vicini_zona, safe=False)
+    # 'safe=False' for objects serialization
