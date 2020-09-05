@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ block.super }} - Registrati{% endblock title %}
+
+{% block css %}
+
+{% endblock css %}
+
+{% block content %}
+
+<main role="main">
+    <!-- Header -->
+    <header>
+        <div class="jumbotron" id="singup-head">
+            <div class="text-center">
+                <h1 class="display-1 font-weight-bold text-uppercase d-none d-lg-block v-space-1">Form di registrazione</h1>
+                <h1 class="display-3 font-weight-bold text-uppercase d-none d-md-block d-lg-none v-space-1">Form di registrazione</h1>
+                <h1 class="font-weight-bold text-uppercase d-sm-block d-md-none v-space-2">Form di registrazione</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="display-4">Registrati</h2>
+                <hr class="hr-home">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 p-3">
+               <h2>Inserisci i dati</h2>
+                <form method="post" class="registration-form p-3">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-md-4 mb-3">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                            {% if form.username.help_text %}
+                                <small class="invalid-feedback">{{ form.username.help_text }}</small>
+                            {% endif %}
+                                <p class="invalid-feedback">{{ form.username.errors }}</p>
+                        </div>
+                        <div class="form-group col-md-4 mb-3">
+                            {{ form.password1.label_tag }}
+                            {{ form.password1 }}
+                            {% if form.password1.help_text %}
+                                <small class="invalid-feedback">{{ form.password1.help_text }}</small>
+                            {% endif %}
+                            <p class="invalid-feedback">{{ form.password1.errors }}</p>
+                        </div>
+                        <div class="form-group col-md-4 mb-3">
+                            {{ form.password2.label_tag }}
+                            {{ form.password2 }}
+                            {% if form.password2.help_text %}
+                                <small class="invalid-feedback">{{ form.password2.help_text }}</small>
+                            {% endif %}
+                            <p class="invalid-feedback">{{ form.password2.errors }}</p>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-2 mb-3">
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                            {% if form.first_name.help_text %}
+                                <small class="invalid-feedback">{{ form.first_name.help_text }}</small>
+                            {% endif %}
+                            <p class="invalid-feedback">{{ form.first_name.errors }}</p>
+                        </div>
+                        <div class="form-group col-md-2 mb-3">
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                            {% if form.last_name.help_text %}
+                                <small class="invalid-feedback">{{ form.last_name.help_text }}</small>
+                            {% endif %}
+                            <p class="invalid-feedback">{{ form.last_name.errors }}</p>
+                        </div>
+                        <div class="form-group col-md-4 mb-3">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                            {% if form.email.help_text %}
+                                <small class="invalid-feedback">{{ form.email.help_text }}</small>
+                            {% endif %}
+                            <p class="invalid-feedback">{{ form.email.errors }}</p>
+                        </div>
+                        <div class="form-group col-md-4 mb-3">
+                            {{ form.groups.label_tag }}
+                            {{ form.groups }}
+                            {% if form.groups.help_text %}
+                                <small class="invalid-feedback">{{ form.groups.help_text }}</small>
+                            {% endif %}
+                            <p class="invalid-feedback">{{ form.groups.errors }}</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrati</button>
+                </form>
+            </div>
+        </div>
+        <div class="row v-space-5">
+        </div>
+    </div>
+</main>
+
+{% endblock content %}
+
+{% block js %}
+
+{% endblock js %}

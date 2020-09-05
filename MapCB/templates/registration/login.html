@@ -7,53 +7,54 @@
 {% endblock css %}
 
 {% block content %}
-
 <main role="main">
-    <!-- Header -->
-    <header class="padding-3x background-image text-center" style="background-color: #8ACEED">
-
+    <header>
+        <div class="row v-space-5">
+        </div>
+        <div class="row v-space-2">
+        </div>
     </header>
 
-    <section class="padding-2x background-white">
-        <div class="line text-center">
-            <h2 class="text-dark text-size-50 text-m-size-40">Authentication</h2>
-        </div>
-    </section>
-
-    <!-- Authentication Form -->
-
-    <section>
-        <div class="line">
-            <div class="margin padding-2x">
-                <div class="s-12 m-10 l-8 center background-grey padding">
-                    <h3 class="text-size-30 margin-bottom-40 text-center"><b>Log In Form</b></h3>
-                    <form class="customform" method="post" enctype="multipart/form-data" action="{% url 'login' %}">{% csrf_token %}
-                        <div class="line">
-                            <div class="margin">
-                                <div class="s-12 m-12 l-6">
-                                    <input name="username" class="required" placeholder="Your Username" title="Your Username" type="text" />
-                                </div>
-                                <div class="s-12 m-12 l-6">
-                                    <input name="password" class="required" placeholder="Your Password" title="Your Password" type="password" />
-                                </div>
-                            </div>
-                        </div>
-                        {% if form.errors %}
-                        <div class="line">
-                            <p class="s-6 m-6 l-6 text-error">Your username and password didn't match. Please try again.</p>
-                        </div>
-                        {% endif %}
-                        <p class="margin-bottom-15">Lost password? <a href="mailto:xxx@email.com" class="text-primary">Contact the Administrator! <i class="icon-sli-envelope-open text-strong"></i></a></p>
-                        <div class="line">
-                            <div class="s-6 center"><button class="button border-radius text-white background-primary" type="submit" value="login">Log In</button></div>
-                            <input type="hidden" name="next" value="{{ next }}" />
-                        </div>
-                    </form>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1>Autenticazione</h1>
+                <p class="lead">
+                    Usa il form sottostante per effettuare l'autenticazione.
+                </p>
+                <hr class="hr-home">
             </div>
         </div>
-    </section>
-
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 text-center">
+                <h3 class="display-4 mb-5"><b>Form di Login</b></h3>
+                <form class="registration-form p-3" method="post" enctype="multipart/form-data" action="{% url 'login' %}">{% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="username">Username</label>
+                            <input class="form-control" name="username" required placeholder="Username" title="Username" type="text" />
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="password">Password</label>
+                            <input class="form-control" name="password" required placeholder="Password" title="Password" type="password" />
+                        </div>
+                    </div>
+                    {% if form.errors %}
+                    <div class="row justify-content-center">
+                        <p class="col-10 text-danger">L'username o la password erano errati. Prova nuovamente.</p>
+                    </div>
+                    {% endif %}
+                    <p class="margin-bottom-15">Password smarrita? <a href="mailto:xxx@email.com" class="color-secondary">Contatta l'amministratore! <span class="oi oi-envelope-closed"></span></a></p>
+                    <div class="row justify-content-center">
+                        <div class="col-3"><button class="btn btn-primary btn-block" type="submit" value="login">Log In</button></div>
+                        <input type="hidden" name="next" value="{{ next }}" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row v-space-5">
+    </div>
 </main>
 
 {% endblock content %}

@@ -55,13 +55,13 @@
                             <a class="nav-link" href="#">Area Personale</a>
                         </li>
                         {% elif not user.is_staff%}
-                        <form action="{% url 'login' %}" class="form-inline my-2 mr-sm-2 my-lg-0">
-                            <input class="form-control mr-sm-2" type="text" placeholder="Username" aria-label="Username">
-                            <input class="form-control mr-sm-2" type="password" placeholder="Password" aria-label="Password">
+                        <form action="{% url 'login' %}" method="post" enctype="multipart/form-data" class="form-inline my-2 mr-sm-2 my-lg-0">{% csrf_token %}
+                            <input class="form-control mr-sm-2" type="text" name="username" required placeholder="Username" aria-label="Username">
+                            <input class="form-control mr-sm-2" type="password" name="password" required placeholder="Password" aria-label="Password">
                             <button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Accedi</button>
                         </form>
                         <li class="nav-item">
-                            <a class="btn btn-warning my-2 my-sm-0" href="#">Registrati</a>
+                            <a class="btn btn-warning my-2 my-sm-0" href="{% url 'signup' %}">Registrati</a>
                         </li>
                         {% else %}
                         <li class="nav-item">

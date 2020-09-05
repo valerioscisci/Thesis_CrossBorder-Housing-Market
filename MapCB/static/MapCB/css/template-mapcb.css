@@ -378,6 +378,52 @@ hr.hr-mappa {
     opacity: 1;
 }
 
+.ricerca {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.ricerca h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
 #map-container {
     -webkit-box-shadow: inset 0px -47px 22px -40px rgba(211,211,211,0.75);
     -moz-box-shadow: inset 0px -47px 22px -40px rgba(211,211,211,0.75);
@@ -397,4 +443,48 @@ hr.hr-mappa {
     background-size: 5px 2px;
 }
 
-rect.bar { fill: steelblue; }
+/* #####  SingUp ##### */
+
+#singup-head {
+    background-image: url(../img/signup.svg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: right center;
+    background-size: 800px auto;
+    opacity: 0.7;
+}
+
+#singup-head h1 {
+    text-shadow: -3px -3px 3px rgba(255,255,255,.1), 7px 7px 7px rgba(0,0,0,.5);
+    color: white;
+}
+
+.registration-form::after {
+    content: "";
+    border-radius: 20px;
+    background-image: url(../img/form.jpg);
+    border: 1px solid #777;
+    background-repeat: repeat;
+    background-position: center;
+    opacity: 0.15;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: -1;
+}
+
+.errorlist {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.errorlist li{
+    display: block;
+    width: 100%;
+    margin-top: .25rem;
+    font-size: 80%;
+    color: #dc3545;
+}
