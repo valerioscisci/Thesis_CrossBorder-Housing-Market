@@ -4,17 +4,17 @@ from django.contrib.auth import views as auth_views
 
 # Other Imports
 from MapCB.views.admin_views import upload_dati
-from MapCB.views.api import lista_prezzi, lista_prezzi_medi, dettaglio_zona, vicini_zona
+from MapCB.views.api import lista_prezzi, lista_prezzi_medi, lista_flussi, dettaglio_zona, vicini_zona
 from MapCB.views.static_views import HomepageView
 from MapCB.views.map_views import MappaView
-from MapCB.views.user import signup#, AreaPersonaleView
+from MapCB.views.user import signup, AreaPersonaleView
 
 # Url generali sito
 
 urlpatterns = [
     path('', HomepageView.as_view(), name='home'),  #  Homepage
     path('mappa/', MappaView.as_view(), name='mappa'),  #  Mappa
-    #path('area_personale/', AreaPersonaleView.as_view(), name='areapersonale'),  #  Area Personale
+    path('area_personale/', AreaPersonaleView, name='areapersonale'),  #  Area Personale
 ]
 
 
@@ -29,6 +29,7 @@ urlpatterns += [
 urlpatterns += [
     path('api/prezzi', lista_prezzi),
     path('api/prezzi_medi', lista_prezzi_medi),
+    path('api/flussi', lista_flussi),
     path('api/prezzi/<slug:zona>', dettaglio_zona),
     path('api/vicini/<slug:zona>', vicini_zona),
 ]

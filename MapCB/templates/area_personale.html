@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ block.super }} - Area Personale{% endblock title %}
+
+{% block css %}
+
+<!-- Libreria Leaflet -->
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+
+<!-- Libreria Leaflet Fullscreen Control -->
+<link href="{% static 'MapCB/css/leaflet-fullscreen.css' %}" rel='stylesheet' />
+
+<!-- Bootstrap toggle button -->
+<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+
+{% endblock css %}
+
+{% block content %}
+
+<main role="main">
+    <!-- Header -->
+    <header>
+        <div class="jumbotron" id="personale-head">
+            <div >
+                <h1 class="display-1 font-weight-bold text-uppercase d-none d-lg-block v-space-1">Area<br/> Personale</h1>
+                <h1 class="display-3 font-weight-bold text-uppercase d-none d-md-block d-lg-none v-space-1">Area<br/> Personale</h1>
+                <h1 class="font-weight-bold text-uppercase d-sm-block d-md-none v-space-2">Area<br/> Personale</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="display-4">Area Personale</h2>
+                <hr class="hr-home">
+            </div>
+        </div>
+        <h5 class="mb-5">Benvenuto, qui puoi consultare i tuoi dati personali e puoi accedere a funzionalità extra.</h5>
+        <div class="row">
+            <div class="col-12">
+                <ul class='nav nav-tabs' id='profileTab' role='tablist'>
+                    <li class='nav-item'>
+                        <a class='nav-link active' id='tab-profilo' data-toggle='tab' href='#profilo' role='tab' aria-controls='profilo' aria-selected='true'>Dati Profilo</a>
+                    </li>
+                    <li class='nav-item'>
+                        <a class='nav-link' id='tab-flussi' data-toggle='tab' href='#flussi' role='tab' aria-controls='flussi' aria-selected='false'>Flussi di Persone</a>
+                    </li>
+                </ul>
+                <div class='tab-content mt-3' id='profileTabContent'>
+                    <div class='tab-pane fade show active' id='profilo' role='tabpanel' aria-labelledby='tab-profilo'>
+                        <div class="container shadow rounded p-4 m-3 bg-color-secondary">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <h3><strong>Informazioni personali</strong> <span class="oi oi-person"></span></h3>
+                                </div>
+                            </div>
+                            <div class="row mb-5">
+                                <div class="col-4">
+                                    <strong>Username<br/></strong>
+                                    <span class="form-control mt-3">{{ user.username }}</span>
+                                </div>
+                                <div class="col-4">
+                                    <strong>E-mail<br/></strong>
+                                    <span class="form-control mt-3">{{ user.email }}</span>
+                                </div>
+                                <div class="col-4">
+                                    <strong>Gruppo<br/></strong>
+                                    <span class="form-control mt-3">{{ user.groups.all.0 }}</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <strong>Nome<br/></strong>
+                                    <span class="form-control mt-3">{{ user.first_name }}</span>
+                                </div>
+                                <div class="col-4">
+                                    <strong>Cognome<br/></strong>
+                                    <span class="form-control mt-3">{{ user.last_name }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='tab-pane fade' id='flussi' role='tabpanel' aria-labelledby='tab-flussi'>
+                        <lead class="m-4">Qui in basso è possibile osservare i flussi di persone che è probabile siano in atto nell'area transfrontaliera.</lead>
+                        <div class="row m-3">
+                            <div class="col-12 bg-light rounded border border-secondary p-3">
+                                <h4><strong>Configurazione della mappa</strong></h4>
+                                <form id="form-mappa" enctype="multipart/form-data">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4">
+                                            <label for="livello">Livello</label>
+                                            <select id="livello" class="form-control">
+                                                <option selected value="provincia">Provincia</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group offset-md-2 col-md-6">
+                                            <label for="affitto_vendita">Affitto/Vendita</label><br>
+                                            <input type="checkbox" id="affitto_vendita" checked data-toggle="toggle" data-on="Affitto" data-off="Vendita" data-onstyle="info" data-offstyle="warning">
+                                            <small id="affitto_vendita_desc" class="form-text text-muted">Indicare se si è interessati ai dati delle vendite o degli affitti.</small>
+                                        </div>
+                                        <button type="submit" class="btn btn-outline-secondary col-2 mr-2" id="form-submit">Aggiorna Mappa</button>
+                                        <button type="submit" class="btn btn-secondary col-2" id="map-reset">Resetta Mappa</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row m-3 p-5" id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row v-space-5">
+        </div>
+    </div>
+</div>
+
+</main>
+
+{% endblock content %}
+
+{% block js %}
+
+<!-- Bootstrap toggle button -->
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+<!-- Libreria Leaflet -->
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+
+<!-- Libreria Leaflet Fullscreen Control -->
+<script src="{% static 'MapCB/js/leaflet-fullscreen.js' %}"></script>
+
+<!-- Libreria Leaflet Ajax -->
+<script src="{% static 'MapCB/js/leaflet-ajax.js' %}"></script>
+
+<!-- Libreria PolylineDecorator -->
+<script src="{% static 'MapCB/js/leaflet.polylineDecorator.js' %}"></script>
+
+<script src="{% static 'MapCB/js/mappa-flussi.js' %}"></script>
+{% endblock js %}

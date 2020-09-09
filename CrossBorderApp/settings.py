@@ -140,6 +140,6 @@ STATICFILES_DIRS = [
 
 # Login/Logout Redirect
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/area_personale/"
 
 LOGOUT_REDIRECT_URL = "/"

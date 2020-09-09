@@ -52,7 +52,7 @@
                             <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Area Personale</a>
+                            <a class="nav-link" href="{% url 'areapersonale' %}">Area Personale</a>
                         </li>
                         {% elif not user.is_staff%}
                         <form action="{% url 'login' %}" method="post" enctype="multipart/form-data" class="form-inline my-2 mr-sm-2 my-lg-0">{% csrf_token %}

@@ -1,5 +1,5 @@
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.shortcuts import render, redirect
 
 from MapCB.forms import SignUpForm
@@ -20,3 +20,11 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+def AreaPersonaleView(request):
+    if request.method == 'POST':
+        print("POST")
+    else:
+        print("GET")
+    user = User.objects.get(username=request.user)
+    return render(request, 'area_personale.html', {'user': user})

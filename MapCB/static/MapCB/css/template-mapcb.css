@@ -238,6 +238,10 @@ hr.hr-footer {
     margin-top: 20em;
 }
 
+.bg-color-secondary {
+    background-color: rgba(101, 100, 120, 0.8);
+}
+
 /* #####  Homepage ##### */
 
 #home-alpi {
@@ -487,4 +491,27 @@ hr.hr-mappa {
     margin-top: .25rem;
     font-size: 80%;
     color: #dc3545;
+}
+
+/* #####  Area Personale ##### */
+
+#personale-head {
+    background-image: url(../img/areapersonale.svg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: right 50%;
+    background-size: 50% auto;
+    opacity: 0.8;
+}
+
+@media screen and (max-width: 500px) {
+  #personale-head {
+    background-position: right 30%;
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  #personale-head {
+    background-position: right 20%;
+  }
 }

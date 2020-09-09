@@ -263,3 +263,102 @@ def vicini_zona(request, zona):
 
     return JsonResponse(vicini_zona, safe=False)
     # 'safe=False' for objects serialization
+
+# API che mi torna tutti la lista di prezzi presente nel DB
+@api_view(['GET'])
+def lista_flussi(request):
+    if request.method == 'GET':
+        livello = request.GET.get('livello', None)
+
+        if livello is not None:
+            if livello == "provincia":
+                vicini = [
+                    ## Austria
+                    {"zona": "Alpes-Maritimes", "vicini": ["Imperia", "Cuneo"]},
+                    {"zona": "Alpes-de-Haute-Provence", "vicini": [ "Cuneo"]},
+                    {"zona": "Hautes-Alpes", "vicini": ["Cuneo", "Torino"]},
+                    {"zona": "Savoie", "vicini": ["Aosta", "Torino"]},
+                    {"zona": "Haute-Savoie", "vicini": ["Vallese", "Aosta",]},
+
+                    ## Svizzera
+                    {"zona": "Vallese", "vicini": ["Haute-Savoie", "Aosta", "Vercelli", "Verbania"]},
+                    {"zona": "Ticino", "vicini": ["Sondrio", "Varese", "Verbania", "Como"]},
+                    {"zona": "Grigioni", "vicini": ["Como", "Sondrio", "Bolzano", "Solden"]},
+
+                    ## Austria
+                    {"zona": "Solden", "vicini": ["Bolzano", "Grigioni"]},
+                    {"zona": "Innsbruck", "vicini": ["Bolzano"]},
+                    {"zona": "Kitzbuhel", "vicini": ["Bolzano"]},
+                    {"zona": "Zell-am-See", "vicini": ["Bolzano"]},
+                    {"zona": "Lienz", "vicini": ["Bolzano", "Belluno"]},
+                    {"zona": "Spittal-An-Der-Drau", "vicini": ["Udine", "Belluno"]},
+                    {"zona": "Karnten", "vicini": ["Udine", "Gorenjska"]},
+
+                    ## Slovenia
+                    {"zona": "Gorenjska", "vicini": ["Karnten", "Udine"]},
+                    {"zona": "Primorska", "vicini": ["Gorizia", "Udine"]},
+                    {"zona": "Severna-Primorska", "vicini": ["Gorizia", "Trieste"]},
+
+                    ## Italia
+                    {"zona": "Trieste", "vicini": ["Severna-Primorska"]},
+                    {"zona": "Gorizia", "vicini": ["Severna-Primorska", "Primorska"]},
+                    {"zona": "Udine", "vicini": ["Karnten", "Gorenjska", "Primorska", "Spittal-An-Der-Drau"]},
+                    {"zona": "Belluno", "vicini": ["Spittal-An-Der-Drau", "Lienz"]},
+                    {"zona": "Bolzano", "vicini": ["Lienz", "Zell-am-See", "Kitzbuhel", "Innsbruck", "Solden", "Grigioni"]},
+                    {"zona": "Sondrio", "vicini": ["Grigioni"]},
+                    {"zona": "Como", "vicini": ["Grigioni", "Ticino"]},
+                    {"zona": "Varese", "vicini": ["Ticino"]},
+                    {"zona": "Verbania", "vicini": ["Ticino", "Vallese"]},
+                    {"zona": "Vercelli", "vicini": ["Vallese"]},
+                    {"zona": "Aosta", "vicini": ["Vallese", "Haute-Savoie", "Savoie"]},
+                    {"zona": "Torino", "vicini": ["Hautes-Alpes", "Savoie"]},
+                    {"zona": "Cuneo", "vicini": ["Alpes-de-Haute-Provence", "Hautes-Alpes", "Alpes-Maritimes"]},
+                    {"zona": "Imperia", "vicini": ["Alpes-Maritimes"]},
+                ]
+                mapping_latlong = [
+                    {"Alpes-de-Haute-Provence": [44.164188, 6.232930]},
+                    {"Alpes-Maritimes": [43.920700, 7.177140]},
+                    {"Aosta": [45.735062, 7.313080]},
+                    {"Belluno": [46.139900, 12.217670]},
+                    {"Bolzano": [46.496720, 11.358000]},
+                    {"Como": [45.808060, 9.085176]},
+                    {"Cuneo": [44.384476, 7.542671]},
+                    {"Gorenjska": [46.366692, 14.108510]},
+                    {"Gorizia": [45.867670, 13.481890]},
+                    {"Grigioni": [46.656030, 9.628640]},
+                    {"Haute-Savoie": [46.052760, 6.432610]},
+                    {"Hautes-Alpes": [44.656399, 6.248200]},
+                    {"Imperia": [43.887901, 8.031570]},
+                    {"Innsbruck": [47.262691, 11.394700]},
+                    {"Karnten": [46.723969, 14.094810]},
+                    {"Kitzbuhel": [47.445469, 12.391940]},
+                    {"Lienz": [46.829460, 12.768950]},
+                    {"Primorska": [46.002950, 14.027860]},
+                    {"Savoie": [45.499149, 5.999980]},
+                    {"Severna-Primorska": [45.596495, 14.044680]},
+                    {"Solden": [46.966709, 11.007390]},
+                    {"Sondrio": [46.171280, 9.869370]},
+                    {"Spittal-An-Der-Drau": [46.798240, 13.495970]},
+                    {"Ticino": [46.225101, 8.770980]},
+                    {"Torino": [45.068371, 7.683070]},
+                    {"Trieste": [45.653599, 13.778520]},
+                    {"Udine": [46.064941, 13.230720]},
+                    {"Vallese": [46.209260, 7.605560]},
+                    {"Varese": [45.817631, 8.826380]},
+                    {"Verbania": [45.921509, 8.551560]},
+                    {"Vercelli": [45.321110, 8.426240]},
+                    {"Zell-am-See": [47.323750, 12.796650]},
+                ]
+                for vicini_container in vicini:
+                   for index, vicino in enumerate(vicini_container["vicini"]):
+                       for coord in mapping_latlong:
+                           if vicino in coord:
+                               vicini_container["vicini"][index] = {"zona": vicino, "coord": coord[vicino]}
+                           if vicini_container["zona"] in coord:
+                               vicini_container["coord"] = coord[vicini_container["zona"]]
+            else:
+                vicini = {}
+        else:
+            vicini = {}
+    return JsonResponse(vicini, safe=False)
+    # 'safe=False' for objects serialization
